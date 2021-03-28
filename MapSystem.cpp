@@ -3,14 +3,16 @@
 
 using namespace std;
 
+#include <conio.h>
+
 int main()
 {
 	MapCollection mapCollection;
-	
+
 	while (true) {
 		mapCollection.Print();
 		char key;
-		cin >> key;
+		key = _getch();
 		if(key == 'd')
 			mapCollection.D();
 		if (key == 'a')

@@ -4,28 +4,37 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class MapCollection {
 
+	int chunkX = 16, chunkY = 64, chunkZ = 16;
+
 	int playerX = 50, playerY = 50;
-	int range = 5;
-	deque<deque<char>> map;
-	deque<char> row;
+	int range = 2;
+	deque<deque<vector<vector<vector<char>>>>> map;
+	deque<vector<vector<vector<char>>>> row;
 	string worldName = "world1";
 
 public:
 
 	MapCollection() {
+		srand(40);
 		GetChunks();
 	}
 
 	void Print() {
 		system("cls");
+		//Aktualnie wyœwietla 4 spoœród 16384 lementów chunka.
 		for (int i = 0; i < map.size(); i++) {
 			for (int j = 0; j < map.at(i).size(); j++) {
-				cout << map.at(i).at(j) << " ";
+				cout << map.at(i).at(j)[0][0][0] << " " << map.at(i).at(j)[1][0][0] << " ";
+			}
+			cout << endl;
+			for (int j = 0; j < map.at(i).size(); j++) {
+				cout << map.at(i).at(j)[2][0][0] << " " << map.at(i).at(j)[3][0][0] << " ";
 			}
 			cout << endl;
 		}
@@ -81,32 +90,47 @@ public:
 		}
 	}
 
-	char GetChunk(int i, int j) {
+	vector<vector<vector<char>>> GetChunk(int i, int j) {
+
 		string path = worldName + "/" + to_string(i) + "-" + to_string(j) + ".txt";
 		ifstream file;
 		file.open(path);
-		char c;
-		if (file) {
-			for (string line; getline(file, line); )
-			{
-				c = line[0];
+			vector<vector<vector<char> > > chunk;
+			for (int x = 0; x < chunkX; x++) {
+				vector<vector<char>> sliceChunk;
+				chunk.push_back(sliceChunk);
+				for (int y = 0; y < chunkY; y++) {
+					vector<char> sliceChunk2;
+					chunk[x].push_back(sliceChunk2);
+					for (int z = 0; z < chunkZ; z++) {
+						char c;
+						if (file) {
+							file >> c;
+						}
+						else {
+							//GENERATOR
+							c = rand() % 3 + 46;
+						}
+						chunk[x][y].push_back(c);
+					}
+				}
 			}
 
 			file.close();
-			return c;
-		}
-		else {
-			file.close();
-			//TO DO: wygeneruj na podstawie seeda.
-			return rand() % 3 + 46;
-		}
+			return chunk;
 	}
 
-	void SaveChunk(int i, int j, char c) {
+	void SaveChunk(int i, int j, vector<vector<vector<char>>> chunk) {
 		string path = worldName + "/" + to_string(i) + "-" + to_string(j) + ".txt";
 		ofstream file;
 		file.open(path);
-		file << c;
+		for (int x = 0; x < chunkX; x++) {
+			for (int y = 0; y < chunkY; y++) {
+				for (int z = 0; z < chunkZ; z++) {
+					file << chunk[x][y][z];
+				}
+			}
+		}
 		file.close();
 	}
 
