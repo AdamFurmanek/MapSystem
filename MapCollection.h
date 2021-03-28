@@ -8,28 +8,17 @@
 using namespace std;
 
 class MapCollection {
-	char testMap[300][300];
 
 	int playerX = 50, playerY = 50;
 	int range = 5;
 	deque<deque<char>> map;
 	deque<char> row;
+	string worldName = "world1";
 
 public:
 
 	MapCollection() {
-		for (int i = 0; i < 300; i++) {
-			for (int j = 0; j < 300; j++) {
-				testMap[i][j] = rand() % 3 + 46;
-			}
-		}
-
-		for (int i = playerY - range; i < playerY + range + 1; i++) {
-			map.push_back(row);
-			for (int j = playerX - range; j < playerX + range + 1; j++) {
-				map.back().push_back(testMap[i][j]);
-			}
-		}
+		GetChunks();
 	}
 
 	void Print() {
@@ -37,16 +26,6 @@ public:
 		for (int i = 0; i < map.size(); i++) {
 			for (int j = 0; j < map.at(i).size(); j++) {
 				cout << map.at(i).at(j) << " ";
-			}
-			cout << endl;
-		}
-	}
-
-	void PrintOriginal() {
-		cout << endl << endl;
-		for (int i = playerY - range; i < playerY + range + 1; i++) {
-			for (int j = playerX - range; j < playerX + range + 1; j++) {
-				cout << testMap[i][j] << " ";
 			}
 			cout << endl;
 		}
@@ -103,7 +82,7 @@ public:
 	}
 
 	char GetChunk(int i, int j) {
-		string path = to_string(i) + "-" + to_string(j) + ".txt";
+		string path = worldName + "/" + to_string(i) + "-" + to_string(j) + ".txt";
 		ifstream file;
 		file.open(path);
 		char c;
@@ -118,18 +97,42 @@ public:
 		}
 		else {
 			file.close();
-			//wygeneruj na podstawie seeda.
-			//return rand() % 3 + 46;
-			return 'a';
+			//TO DO: wygeneruj na podstawie seeda.
+			return rand() % 3 + 46;
 		}
 	}
 
 	void SaveChunk(int i, int j, char c) {
-		string path = to_string(i) + "-" + to_string(j) + ".txt";
+		string path = worldName + "/" + to_string(i) + "-" + to_string(j) + ".txt";
 		ofstream file;
 		file.open(path);
 		file << c;
 		file.close();
+	}
+
+	void GetChunks() {
+		for (int i = playerY - range; i < playerY + range + 1; i++) {
+			map.push_back(row);
+			for (int j = playerX - range; j < playerX + range + 1; j++) {
+				map.back().push_back(GetChunk(i,j));
+			}
+		}
+	}
+
+	void SaveChunks() {
+		for (int i = playerY - range; i < playerY + range + 1; i++) {
+			for (int j = playerX - range; j < playerX + range + 1; j++) {
+				SaveChunk(i, j, map.front().front());
+				map.front().pop_front();
+			}
+			map.pop_front();
+		}
+	}
+
+	void ChangeRange(int delta) {
+		SaveChunks();
+		range += delta;
+		GetChunks();
 	}
 	
 };

@@ -7,23 +7,26 @@ int main()
 {
 	MapCollection mapCollection;
 	
-
 	while (true) {
 		mapCollection.Print();
-		mapCollection.PrintOriginal();
-		char direction;
-		cin >> direction;
-		if(direction == 'd')
+		char key;
+		cin >> key;
+		if(key == 'd')
 			mapCollection.D();
-		if (direction == 'a')
+		if (key == 'a')
 			mapCollection.A();
-		if (direction == 'w')
+		if (key == 'w')
 			mapCollection.W();
-		if (direction == 's')
+		if (key == 's')
 			mapCollection.S();
-
-
+		if (key == '1')
+			mapCollection.ChangeRange(-1);
+		if (key == '2')
+			mapCollection.ChangeRange(1);
+		if (key == 'q') {
+			mapCollection.SaveChunks();
+			break;
+		}
 	}
-	
 }
 
