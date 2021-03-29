@@ -5,12 +5,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "FastNoiseLite.h"
 
 using namespace std;
 
 class MapCollection {
 
-	int chunkX = 16, chunkY = 64, chunkZ = 16;
+	int chunkX = 2, chunkY = 64, chunkZ = 2;
 
 	int playerX = 50, playerY = 50;
 	int range = 2;
@@ -21,7 +22,7 @@ class MapCollection {
 public:
 
 	MapCollection() {
-		srand(40);
+		srand(NULL);
 		GetChunks();
 	}
 
@@ -30,11 +31,11 @@ public:
 		//Aktualnie wyœwietla 4 spoœród 16384 lementów chunka.
 		for (int i = 0; i < map.size(); i++) {
 			for (int j = 0; j < map.at(i).size(); j++) {
-				cout << map.at(i).at(j)[0][0][0] << " " << map.at(i).at(j)[1][0][0] << " ";
+				cout << map.at(i).at(j)[0][0][0] << " " << map.at(i).at(j)[0][0][1] << " ";
 			}
 			cout << endl;
 			for (int j = 0; j < map.at(i).size(); j++) {
-				cout << map.at(i).at(j)[2][0][0] << " " << map.at(i).at(j)[3][0][0] << " ";
+				cout << map.at(i).at(j)[1][0][0] << " " << map.at(i).at(j)[1][0][1] << " ";
 			}
 			cout << endl;
 		}
@@ -95,29 +96,43 @@ public:
 		string path = worldName + "/" + to_string(i) + "-" + to_string(j) + ".txt";
 		ifstream file;
 		file.open(path);
-			vector<vector<vector<char> > > chunk;
-			for (int x = 0; x < chunkX; x++) {
-				vector<vector<char>> sliceChunk;
-				chunk.push_back(sliceChunk);
-				for (int y = 0; y < chunkY; y++) {
-					vector<char> sliceChunk2;
-					chunk[x].push_back(sliceChunk2);
-					for (int z = 0; z < chunkZ; z++) {
-						char c;
-						if (file) {
+			
+			if (file) {
+				vector<vector<vector<char> > > chunk;
+				for (int x = 0; x < chunkX; x++) {
+
+					vector<vector<char>> sliceChunk;
+					chunk.push_back(sliceChunk);
+
+					for (int y = 0; y < chunkY; y++) {
+
+						vector<char> sliceChunk2;
+						chunk[x].push_back(sliceChunk2);
+
+						for (int z = 0; z < chunkZ; z++) {
+							char c;
 							file >> c;
+							chunk[x][y].push_back(c);
 						}
-						else {
-							//GENERATOR
-							c = rand() % 3 + 46;
-						}
-						chunk[x][y].push_back(c);
 					}
 				}
+				file.close();
+				return chunk;
+			}
+			else {
+				file.close();
+				vector<vector<vector<char> > > chunk(chunkX, vector<vector<char>>(chunkY, vector<char>(chunkZ, '0')));
+				FastNoiseLite noise;
+				noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+				//GENERATOR
+				for (int x = 0; x < chunkX; x++) {
+					for (int z = 0; z < chunkZ; z++) {
+						chunk[x][0][z] = (int)(noise.GetNoise((float)(i * chunkX + x), (float)(j * chunkZ + z)) * 10 + 20) + 28;
+					}
+				}
+				return chunk;
 			}
 
-			file.close();
-			return chunk;
 	}
 
 	void SaveChunk(int i, int j, vector<vector<vector<char>>> chunk) {

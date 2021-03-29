@@ -142,6 +142,7 @@
     <ClCompile Include="MapSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="MapCollection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
