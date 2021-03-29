@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MapCollection.h"
+#include "MapCollection2.h"
 
 using namespace std;
 
@@ -7,28 +7,29 @@ using namespace std;
 
 int main()
 {
-	MapCollection mapCollection;
+	MapCollection2 mapCollection;
 
 	while (true) {
 		mapCollection.Print();
 		char key;
 		key = _getch();
-		if(key == 'd')
-			mapCollection.D();
-		if (key == 'a')
-			mapCollection.A();
 		if (key == 'w')
 			mapCollection.W();
+		if (key == 'a')
+			mapCollection.A();
 		if (key == 's')
 			mapCollection.S();
-		if (key == '1')
-			mapCollection.ChangeRange(-1);
-		if (key == '2')
-			mapCollection.ChangeRange(1);
-		if (key == 'q') {
-			mapCollection.SaveChunks();
-			break;
-		}
+		if(key == 'd')
+			mapCollection.D();
+		//if (key == '1')
+		//	mapCollection.ChangeRange(-1);
+		//if (key == '2')
+		//	mapCollection.ChangeRange(1);
+		//if (key == 'q') {
+		//	mapCollection.SaveChunks();
+		//	break;
+		//}
 	}
+	
 }
 
